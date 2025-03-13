@@ -1,39 +1,66 @@
-import { useState } from "react"
+import { useEffect, useState } from "react";
+import { auth } from "../firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
+import Login from "./Login";
+import Register from "./Register";
+import Header from "./Header";
+import PlayerList from "./PlayerList";
+import MyTeam from "./MyTeam";
+import OnClickStats from "./OnClickStats";
 
 function App() {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [players, setPlayers] = useState([]); // State for all players
+  const [selectedPlayers, setSelectedPlayers] = useState([]); // State for selected players
 
-  const handleSubmit = async(e) =>{
-    console.log('Handle submit called')
-    e.preventDefault()
-    const response = await fetch('http://localhost:3000/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name:username, password })
+  // Check authentication state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
     });
+    return () => unsubscribe();
+  }, []);
 
-    if (response.ok) {
-      alert('User logged in');
-    } else {
-      alert('Error logging in user');
+  // Fetch players from the backend
+  useEffect(() => {
+    if (user) {
+      fetch('http://localhost:3000/api/players')
+        .then((response) => response.json())
+        .then((data) => setPlayers(data))
+        .catch((error) => console.error('Error fetching players:', error));
     }
-  }
+  }, [user]);
+
+  // Handle player selection
+  const handleSelectPlayer = (player) => {
+    if (selectedPlayers.length < 5 && !selectedPlayers.includes(player)) {
+      setSelectedPlayers([...selectedPlayers, player]);
+    }
+  };
+
   return (
-    <>
-      <h1>Login Test</h1>
-      <form onSubmit={handleSubmit}>
-        <label>Username:</label>
-        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
-
-        <label>Password:</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-
-        <button type="submit">Login</button>
-      </form>
-      <p>Don't have an account? <a href="https://google.com">Register</a></p>
-    </>
+    <div>
+      {user ? (
+        <>
+          <Header />
+          <div className="flex justify-between items-center">
+            <PlayerList players={players} onSelectPlayer={handleSelectPlayer} />
+            <MyTeam selectedPlayers={selectedPlayers} />
+            <OnClickStats />
+          </div>
+          <h1>Welcome, {user.email}</h1>
+        </>
+      ) : (
+        <>
+          {isRegistering ? <Register /> : <Login />}
+          <button onClick={() => setIsRegistering(!isRegistering)}>
+            {isRegistering ? "Already have an account? Login" : "Don't have an account? Register"}
+          </button>
+        </>
+      )}
+    </div>
   );
 }
 
-export default App
+export default App;
