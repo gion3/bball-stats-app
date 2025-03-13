@@ -7,16 +7,16 @@ function App() {
   const handleSubmit = async(e) =>{
     console.log('Handle submit called')
     e.preventDefault()
-    const response = await fetch('http://localhost:3000/users', {
+    const response = await fetch('http://localhost:3000/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ name:username, password })
     });
 
     if (response.ok) {
-      alert('User registered successfully');
+      alert('User logged in');
     } else {
-      alert('Error registering user');
+      alert('Error logging in user');
     }
   }
   return (
@@ -29,8 +29,9 @@ function App() {
         <label>Password:</label>
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
 
-        <button type="submit">Register</button>
+        <button type="submit">Login</button>
       </form>
+      <p>Don't have an account? <a href="https://google.com">Register</a></p>
     </>
   );
 }
