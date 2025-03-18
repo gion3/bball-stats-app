@@ -2,7 +2,6 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import cors from 'cors';
 import sqlite3 from 'sqlite3';
-import authRoutes from './routes/auth.js';
 const app = express()
 
 app.use(express.json())
@@ -19,7 +18,7 @@ const db = new sqlite3.Database('database.db', (err) => {
 
 app.get('/api/players', (req,res) =>{
     const query = `
-    SELECT players.player_id, players.player_name, teams.team_name
+    SELECT players.player_id, players.player_name, players.player_position, teams.team_name
     FROM players
     INNER JOIN teams ON players.fk_team_id = teams.team_id
     `

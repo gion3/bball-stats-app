@@ -1,14 +1,14 @@
 import React from 'react';
 import backgroundImg from '../assets/background.png';
 
-const MyTeam = ({ selectedPlayers }) => {
+const MyTeam = ({ selectedPlayers, onRemovePlayer }) => {
   // Example positions on the court (you can adjust these)
   const courtPositions = [
-    { top: '10%', left: '50%', label: 'Point Guard' },
-    { top: '30%', left: '20%', label: 'Shooting Guard' },
-    { top: '30%', left: '80%', label: 'Small Forward' },
-    { top: '50%', left: '35%', label: 'Power Forward' },
-    { top: '50%', left: '65%', label: 'Center' },
+    { top: '80%', left: '30%', label: 'PG' },
+    { top: '80%', left: '70%', label: 'SG' },
+    { top: '40%', left: '30%', label: 'SF' },
+    { top: '40%', left: '70%', label: 'PF' },
+    { top: '20%', left: '50%', label: 'C' },
   ];
 
   return (
@@ -22,26 +22,37 @@ const MyTeam = ({ selectedPlayers }) => {
         position: 'relative', // Required for absolute positioning of players
       }}
     >
-      {/* Display selected players on the court */}
-      {selectedPlayers.map((player, index) => (
+    {courtPositions.map((position) =>{
+      const player = selectedPlayers[position.label];
+      return(
         <div
-          key={player.player_id}
-          style={{
-            position: 'absolute',
-            top: courtPositions[index].top,
-            left: courtPositions[index].left,
-            transform: 'translate(-50%, -50%)', // Center the player at the position
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-            padding: '8px 16px',
-            borderRadius: '4px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-            textAlign: 'center',
-          }}
+        
+        key = {position.label}
+        //stergere jucator din teren la click dreapta
+        onContextMenu={(e) => {
+          e.preventDefault();
+          if(player && onRemovePlayer) {
+            onRemovePlayer(position.label)
+          };}
+        }
+        style={{
+              position: 'absolute',
+              top: position.top,
+              left: position.left,
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: player ? 'rgba(255, 255, 255, 0.8)' : 'rgba(200, 200, 200, 0.5)',
+              padding: '8px 16px',
+              borderRadius: '4px',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+              textAlign: 'center',
+              cursor: player? 'pointer' : 'default',
+            }}
         >
-          {player.player_name}
-          <div className="text-xs text-gray-600">{courtPositions[index].label}</div>
+          {player ? player.player_name : 'Select a Player'}
+          <div className='text-xs text-gray-600'>{position.label}</div>
         </div>
-      ))}
+      )
+    })}
     </div>
   );
 };

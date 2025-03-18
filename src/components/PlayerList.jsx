@@ -11,7 +11,7 @@ const PlayerList = ({ players, onSelectPlayer }) => {
             className="mb-2 cursor-pointer hover:bg-gray-200 p-2 rounded"
             onClick={() => onSelectPlayer(player)}
           >
-            <span className="font-semibold">{player.player_name}</span> - {player.team_name}
+            <span className="font-semibold">{player.player_name}</span> - {player.team_name} - {player.player_position}
           </li>
         ))}
       </ul>

@@ -12,7 +12,13 @@ function App() {
   const [user, setUser] = useState(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const [players, setPlayers] = useState([]); // State for all players
-  const [selectedPlayers, setSelectedPlayers] = useState([]); // State for selected players
+  const [selectedPlayers, setSelectedPlayers] = useState({
+    PG: null,
+    SG: null,
+    SF: null,
+    PF: null,
+    C: null,
+  }); // State for selected players
 
   // Check authentication state
   useEffect(() => {
@@ -34,10 +40,19 @@ function App() {
 
   // Handle player selection
   const handleSelectPlayer = (player) => {
-    if (selectedPlayers.length < 5 && !selectedPlayers.includes(player)) {
-      setSelectedPlayers([...selectedPlayers, player]);
-    }
+    const position = player.player_position;
+    setSelectedPlayers((prev) => ({
+      ...prev,
+      [position]: player,
+    }))
   };
+
+  const handleRemovePlayer = (position) => {
+    setSelectedPlayers((prev) => ({
+      ...prev,
+      [position]: null,
+    }))
+  }
 
   return (
     <div>
@@ -45,8 +60,8 @@ function App() {
         <>
           <Header />
           <div className="flex justify-between items-center">
-            <PlayerList players={players} onSelectPlayer={handleSelectPlayer} />
-            <MyTeam selectedPlayers={selectedPlayers} />
+            <PlayerList players={players} onSelectPlayer={handleSelectPlayer}/>
+            <MyTeam selectedPlayers={selectedPlayers} onRemovePlayer={handleRemovePlayer} />
             <OnClickStats />
           </div>
           <h1>Welcome, {user.email}</h1>
