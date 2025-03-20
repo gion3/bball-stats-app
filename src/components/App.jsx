@@ -11,6 +11,7 @@ import OnClickStats from "./OnClickStats";
 function App() {
   const [user, setUser] = useState(null);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [selectedPlayerForStats, setSelectedPlayerForStats] = useState(null);
   const [players, setPlayers] = useState([]); // State for all players
   const [selectedPlayers, setSelectedPlayers] = useState({
     PG: null,
@@ -19,6 +20,10 @@ function App() {
     PF: null,
     C: null,
   }); // State for selected players
+
+  const handlePlayerClick = (player) => {
+    setSelectedPlayerForStats(player);
+  };
 
   // Check authentication state
   useEffect(() => {
@@ -48,10 +53,16 @@ function App() {
   };
 
   const handleRemovePlayer = (position) => {
-    setSelectedPlayers((prev) => ({
-      ...prev,
-      [position]: null,
-    }))
+    setSelectedPlayers((prev) => {
+      const updatedPlayers = { ...prev, [position]: null };
+
+      // If the removed player is currently displayed in OnClickStats, clear it
+      if (selectedPlayerForStats && selectedPlayerForStats.player_position === position) {
+        setSelectedPlayerForStats(null);
+      }
+  
+      return updatedPlayers;
+    });
   }
 
   return (
@@ -61,8 +72,8 @@ function App() {
           <Header />
           <div className="flex justify-between items-center">
             <PlayerList players={players} onSelectPlayer={handleSelectPlayer}/>
-            <MyTeam selectedPlayers={selectedPlayers} onRemovePlayer={handleRemovePlayer} />
-            <OnClickStats />
+            <MyTeam selectedPlayers={selectedPlayers} onRemovePlayer={handleRemovePlayer} onPlayerClick = {handlePlayerClick}/>
+            <OnClickStats selectedPlayer={selectedPlayerForStats}/>
           </div>
           <h1>Welcome, {user.email}</h1>
         </>

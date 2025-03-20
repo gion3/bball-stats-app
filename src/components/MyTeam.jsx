@@ -1,7 +1,7 @@
 import React from 'react';
 import backgroundImg from '../assets/background.png';
 
-const MyTeam = ({ selectedPlayers, onRemovePlayer }) => {
+const MyTeam = ({ selectedPlayers, onRemovePlayer, onPlayerClick }) => {
   // Example positions on the court (you can adjust these)
   const courtPositions = [
     { top: '80%', left: '30%', label: 'PG' },
@@ -10,6 +10,7 @@ const MyTeam = ({ selectedPlayers, onRemovePlayer }) => {
     { top: '40%', left: '70%', label: 'PF' },
     { top: '20%', left: '50%', label: 'C' },
   ];
+
 
   return (
     <div
@@ -28,6 +29,8 @@ const MyTeam = ({ selectedPlayers, onRemovePlayer }) => {
         <div
         
         key = {position.label}
+        //afisare statistici la click pe jucator
+        onClick = {() => player && onPlayerClick(player) }
         //stergere jucator din teren la click dreapta
         onContextMenu={(e) => {
           e.preventDefault();
