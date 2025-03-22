@@ -1,15 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 import backgroundImg from '../assets/background.png';
 
 const MyTeam = ({ selectedPlayers, onRemovePlayer, onPlayerClick }) => {
   // Example positions on the court (you can adjust these)
   const courtPositions = [
-    { top: '80%', left: '30%', label: 'PG' },
-    { top: '80%', left: '70%', label: 'SG' },
-    { top: '40%', left: '30%', label: 'SF' },
-    { top: '40%', left: '70%', label: 'PF' },
-    { top: '20%', left: '50%', label: 'C' },
+    { top: '80%', left: '30%', label: 'Guard' },
+    { top: '80%', left: '70%', label: 'Guard' },
+    { top: '40%', left: '30%', label: 'Forward' },
+    { top: '40%', left: '70%', label: 'Forward' },
+    { top: '20%', left: '50%', label: 'Center' },
   ];
+
+  const formations = {
+    "1-2-2" : {Guard: 1, Forward: 2, Center: 2},
+    "2-1-2" : {Guard: 2, Forward: 1, Center: 2},
+    "2-2-1" : {Guard: 2, Forward: 2, Center: 1},
+    "1-3-1" : {Guard: 1, Forward: 3, Center: 1},
+  }
+
+  const [selectedFormation, setSelectedFormation] = useState('2-2-1');
+
+  const addPlayerToTeam = (player) => {
+    setTeam((prevTeam) => {
+      // Find valid positions the player can play
+      const availablePositions = Object.keys(formations[selectedFormation]).filter((pos) =>
+        player.positions.includes(pos)
+      );
+  
+      for (const pos of availablePositions) {
+        if (prevTeam[pos].length < formations[selectedFormation][pos]) {
+          return { ...prevTeam, [pos]: [...prevTeam[pos], player] };
+        }
+      }
+      return prevTeam; // No changes if the team is full
+    });
+  };
+
+  const removePlayerFromTeam = (playerId) => {
+    setTeam((prevTeam) => {
+      const newTeam = {};
+      for (const pos in prevTeam) {
+        newTeam[pos] = prevTeam[pos].filter((p) => p.id !== playerId);
+      }
+      return newTeam;
+    });
+  };
+  
+  const changeFormation = (newFormation) => {
+    setSelectedFormation(newFormation);
+    setTeam({ Guard: [], Forward: [], Center: [] }); // Reset team for now
+  };
+  
 
 
   return (

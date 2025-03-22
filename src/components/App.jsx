@@ -11,14 +11,11 @@ import OnClickStats from "./OnClickStats";
 function App() {
   const [user, setUser] = useState(null);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [selectedPlayerForStats, setSelectedPlayerForStats] = useState(null);
-  const [players, setPlayers] = useState([]); // State for all players
+  const [selectedPlayerForStats, setSelectedPlayerForStats] = useState(null); 
   const [selectedPlayers, setSelectedPlayers] = useState({
-    PG: null,
-    SG: null,
-    SF: null,
-    PF: null,
-    C: null,
+    Guard: [],
+    Forward: [],
+    Center: [],
   }); // State for selected players
 
   const handlePlayerClick = (player) => {
@@ -34,14 +31,7 @@ function App() {
   }, []);
 
   // Fetch players from the backend
-  useEffect(() => {
-    if (user) {
-      fetch('http://localhost:3000/api/players')
-        .then((response) => response.json())
-        .then((data) => setPlayers(data))
-        .catch((error) => console.error('Error fetching players:', error));
-    }
-  }, [user]);
+  
 
   // Handle player selection
   const handleSelectPlayer = (player) => {
@@ -70,8 +60,8 @@ function App() {
       {user ? (
         <>
           <Header />
-          <div className="flex justify-between items-center">
-            <PlayerList players={players} onSelectPlayer={handleSelectPlayer}/>
+          <div className="flex justify-between items-start content-around p-4">
+            <PlayerList onSelectPlayer={handleSelectPlayer}/>
             <MyTeam selectedPlayers={selectedPlayers} onRemovePlayer={handleRemovePlayer} onPlayerClick = {handlePlayerClick}/>
             <OnClickStats selectedPlayer={selectedPlayerForStats}/>
           </div>
