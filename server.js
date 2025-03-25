@@ -16,47 +16,52 @@ const db = new sqlite3.Database('C:/Users/ionut/Desktop/nba.sqlite', (err) => {
     }
 })
 
-app.get('/api/players', (req,res) =>{
+app.get('/api/players', (req, res) => {
     let query;
     const player = req.query.player;
-    if(player){
-        const player = req.query.player
+    if (player) {
         query = `
         SELECT 
             p.id,
             p.full_name,
             p.first_name,
             p.last_name,
-            c.position,
+            GROUP_CONCAT(REPLACE(c.position, '-', ',')) AS positions,
             c.team_name
         FROM player p
         LEFT JOIN common_player_info c ON p.id = c.person_id
-        WHERE p.is_active = 1 AND LOWER(p.full_name) LIKE '%${player}%';
-        `
+        WHERE p.is_active = 1 AND LOWER(p.full_name) LIKE '%${player}%'
+        GROUP BY p.id;
+        `;
+    } else {
+        query = `
+        SELECT 
+            p.id,
+            p.full_name,
+            p.first_name,
+            p.last_name,
+            GROUP_CONCAT(REPLACE(c.position, '-', ',')) AS positions,
+            c.team_name
+        FROM player p
+        LEFT JOIN common_player_info c ON p.id = c.person_id
+        WHERE p.is_active = 1 AND c.position NOT NULL AND c.team_id IS NOT 0
+        GROUP BY p.id;
+        `;
     }
-    else {query = `
-    SELECT 
-        p.id,
-        p.full_name,
-        p.first_name,
-        p.last_name,
-        c.position,
-        c.team_name
-    FROM player p
-    LEFT JOIN common_player_info c ON p.id = c.person_id
-    WHERE p.is_active = 1;
-    `}
     db.all(query, (err, rows) => {
         if (err) {
-            console.error('Eroare la interogare', err.message)
-            res.status(500).json({message: 'Eroare la interogare'})
+            console.error('Eroare la interogare', err.message);
+            res.status(500).json({ message: 'Eroare la interogare' });
         } else {
-            res.status(200).json(rows)
-            console.log(rows)
+            const players = rows.map(row => ({
+                ...row,
+                positions: row.positions ? row.positions.split(',').filter(pos => pos.trim()) : []
+            }));
+            res.status(200).json(players);
+            console.log(players);
         }
-    })
-})
-
+    });
+});
 
 app.listen(3000, () => {
     console.log('Server pornit pe port 3000')
