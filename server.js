@@ -19,6 +19,7 @@ const db = new sqlite3.Database('C:/Users/ionut/Desktop/nba.sqlite', (err) => {
 app.get('/api/players', (req, res) => {
     let query;
     const player = req.query.player;
+    let params = [];
     if (player) {
         query = `
         SELECT 
@@ -30,9 +31,11 @@ app.get('/api/players', (req, res) => {
             c.team_name
         FROM player p
         LEFT JOIN common_player_info c ON p.id = c.person_id
-        WHERE p.is_active = 1 AND LOWER(p.full_name) LIKE '%${player}%'
+        WHERE p.is_active = 1 AND c.position IS NOT NULL AND c.team_id IS NOT 0 AND LOWER(p.full_name) LIKE ? 
         GROUP BY p.id;
         `;
+        params.push(`%${player.toLowerCase()}%`);
+        console.log(player)
     } else {
         query = `
         SELECT 
@@ -44,11 +47,12 @@ app.get('/api/players', (req, res) => {
             c.team_name
         FROM player p
         LEFT JOIN common_player_info c ON p.id = c.person_id
-        WHERE p.is_active = 1 AND c.position NOT NULL AND c.team_id IS NOT 0
+        WHERE p.is_active = 1 AND c.position IS NOT NULL AND c.team_id IS NOT 0
         GROUP BY p.id;
         `;
     }
-    db.all(query, (err, rows) => {
+    //query parametrizat pentru a nu fi vulnerabili la sql injection
+    db.all(query, params, (err, rows) => {
         if (err) {
             console.error('Eroare la interogare', err.message);
             res.status(500).json({ message: 'Eroare la interogare' });

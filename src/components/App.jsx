@@ -145,13 +145,14 @@ function App() {
     if (!window.confirm("Changing formation will clear your team. Continue?")) {
       return;
     }
-  
+    console.log("handleFormationChange called with params: " + formationName);
     setTeam({
       Formation: [...FORMATIONS[formationName]],
       Guards: [],
       Forwards: [],
       Centers: []
     });
+    console.log(team)
   };
 
   return (
@@ -166,6 +167,8 @@ function App() {
               onRemovePlayer={handleRemovePlayer}
               onPlayerClick={handlePlayerClick}
               selectedFormation={[2,2,1]}
+              formations={FORMATIONS}
+              onFormationChange={handleFormationChange}
             />
             <OnClickStats selectedPlayer={selectedPlayerForStats} />
           </div>
