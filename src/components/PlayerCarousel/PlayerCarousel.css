@@ -1,0 +1,40 @@
+.carousel-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 20px;
+    padding: 10px;
+  }
+  
+  .carousel::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .scroll-button {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 2;
+    height: 60px;
+  }
+  
+  .scroll-button.left {
+    margin-right: 10px;
+  }
+  
+  .scroll-button.right {
+    margin-left: 10px;
+  }
+  
