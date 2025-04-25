@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import {useNavigate} from 'react-router-dom';
 import "./PlayerCard.css"
 
 const PlayerCard = ({playerId}) => {
+  const navigate = useNavigate();
   const [player, setPlayer] = useState([]);
 
   useEffect(() => {
@@ -30,13 +32,15 @@ const PlayerCard = ({playerId}) => {
             .catch((error) => console.error('Error fetching player:', error));
     }, [playerId]);
 
-    
+    const handleClick = () =>{
+        navigate(`/players/${player.id}`);
+    }
 
     const cardStyle = {
         background: `linear-gradient(135deg, ${player.color1} 70%, ${player.color2})`
     }
   return (
-    <div className='player-card' style={cardStyle}>
+    <div className='player-card' style={cardStyle} onClick={handleClick}>
         <div className='player-header'>
             <img
                 src={`/player_headshots/${player.id}.png`}
