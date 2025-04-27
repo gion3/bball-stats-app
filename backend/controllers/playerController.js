@@ -55,13 +55,39 @@ const getTop10Players = (req,res) =>{
       res.status(500).json({ error: err.message });
       return;
     }
-    console.log('Top 10 players:', rows);
     res.json(rows);
   });
+}
+
+const getPlayerSeasonStats = (req,res) =>{
+  const sql = `
+    SELECT p.PLAYER_ID, g.GAME_ID, g.GAME_DATE, g.MATCHUP, g.WL, g.MIN, g.FGM, g.FGA, g.FG_PCT, g.FG3M, 
+    g.FG3A, g.FG3_PCT, g.FTM, g.FTA, g.FT_PCT, g.OREB, g.DREB, g.REB,
+    g.AST, g.STL, g.BLK, g.TOV, g.PF,g.PTS, g.PLUS_MINUS
+    FROM player_stats p
+    JOIN game_logs g
+    ON p.PLAYER_ID = g.PLAYER_ID
+    WHERE p.PLAYER_ID = ?
+  `;
+  const {id} = req.params;
+
+    db.all(sql, [id], (err,row) => {
+        if(err){
+            res.status(500).json({error:err.message});
+        }
+        else if (!row){
+            res.status(404).json({message: "Player not found!"});
+        }
+        else{
+            console.log(row);
+            res.json(row);
+        }
+    });
 }
 
 module.exports = { 
     getAllPlayers,
     getPlayerById,
     getTop10Players,
+    getPlayerSeasonStats,
 };

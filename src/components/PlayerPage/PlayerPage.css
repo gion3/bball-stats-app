@@ -1,0 +1,137 @@
+table{
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    border: 3px solid blue;
+}
+
+tbody td{
+    text-align: center;
+}
+
+tbody tr:nth-child(odd){
+    background-color: #dfdfdf;
+}
+
+tbody tr:nth-child(even){
+    background-color: #ffffff;
+}
+
+th,td {
+    padding: 5px;
+}
+.win {
+    color: green;
+}
+.loss {
+    color: red;
+}
+.pagination-controls{
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.pagination-controls button{
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.pagination-controls button:hover{
+    background-color: #333;
+    color: #fff;
+}
+
+.pagination-controls button:disabled{
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.player-headshot{
+    width: 350px;
+    height: 250px;
+    object-fit: cover;
+    align-self: flex-end;
+    margin-left: 50px;
+    
+}
+
+.player-page-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1%;
+    height: 300px;
+    width:100%;
+    overflow: hidden;
+    font-family: 'Roboto', sans-serif;
+    font-size: 20px;
+}
+
+.player-header-info{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 30px;
+}
+
+.player-header-name{
+    font-size:2rem;
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    color: #ffffff;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+}
+
+.player-header-team-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #444;
+    margin-top: 0.5rem;
+    letter-spacing: 1px;
+}
+
+.team-logo{
+    opacity: 0.33;
+    width: 500px;
+    height: 500px;
+    object-fit: cover;
+    overflow: hidden;
+}
+
+.player-header-averages {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr 1fr;
+    gap: 0rem 0.5rem;
+    align-items: center;
+    justify-items: center;
+    background: rgba(255,255,255,0.5);
+    border-radius: 16px;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+    min-width: 240px;
+    min-height: 90px;
+}
+
+.stat-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #333;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #111;
+    letter-spacing: 1px;
+}
