@@ -79,10 +79,35 @@ const getPlayerSeasonStats = (req,res) =>{
             res.status(404).json({message: "Player not found!"});
         }
         else{
-            console.log(row);
             res.json(row);
         }
     });
+}
+
+const getPlayerByName = (req,res) =>{
+  const sql = `
+      SELECT p.PLAYER_ID, p.PLAYER_NAME, p.TEAM_ID, p.AGE, t.TEAM_NAME
+      FROM player_stats p
+      JOIN team_stats t 
+      ON p.TEAM_ID = t.TEAM_ID
+      WHERE p.PLAYER_NAME LIKE ?
+      LIMIT 5
+      `;
+  const {name} = req.params;
+  const searchTerm = `%${name}%`; //pt cautare partiala
+
+  db.all(sql, [searchTerm], (err,row) => {
+    if(err){
+        res.status(500).json({error:err.message});
+    }
+    else if (!row || row.length === 0){
+        res.status(404).json({message: "Player not found!"});
+    }
+    else{
+        res.json(row);
+    }
+});
+
 }
 
 module.exports = { 
@@ -90,4 +115,5 @@ module.exports = {
     getPlayerById,
     getTop10Players,
     getPlayerSeasonStats,
+    getPlayerByName,
 };

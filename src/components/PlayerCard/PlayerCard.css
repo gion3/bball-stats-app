@@ -12,6 +12,7 @@
     box-sizing: border-box;
     font-family: 'Segoe UI', sans-serif;
     transition: transform 0.2s ease;
+    cursor:pointer;
 }
 
 .player-image {

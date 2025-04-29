@@ -1,6 +1,7 @@
 import { FiSettings } from "react-icons/fi"; 
 import { auth } from "../firebaseConfig";
 import { NavLink } from "react-router-dom";
+import SearchBar from "./SearchBar/SearchBar";
 
 function Header() {
   return (
@@ -12,6 +13,7 @@ function Header() {
       </nav>
 
       <div className="flex items-center gap-4">
+        <SearchBar />
         <NavLink to="/settings">
           <FiSettings className="text-xl cursor-pointer hover:text-gray-400" />
         </NavLink>
