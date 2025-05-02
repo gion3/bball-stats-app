@@ -8,5 +8,4 @@ router.get('/search/:name',getPlayerByName);
 router.get('/stats/:id', getPlayerSeasonStats);
 router.get('/:id', getPlayerById);
 
-
 module.exports = router;

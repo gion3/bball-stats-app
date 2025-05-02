@@ -106,8 +106,7 @@ const getPlayerByName = (req,res) =>{
     else{
         res.json(row);
     }
-});
-
+  });
 }
 
 module.exports = { 

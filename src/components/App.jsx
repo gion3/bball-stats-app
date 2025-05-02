@@ -4,6 +4,7 @@ import Header from "./Header";
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import PlayerPage from "./PlayerPage/PlayerPage";
+import NewsPage from "./NewsPage/NewsPage";
 
 function App() {
   
@@ -12,6 +13,7 @@ function App() {
     <Header/>
     <Routes>
       <Route path="/" element={<HomePage/>}/>
+      <Route path="/news" element={<NewsPage/>}/>
       <Route path="players/:playerId" element={<PlayerPage playerId={2544} />} />
     </Routes>
     </>
