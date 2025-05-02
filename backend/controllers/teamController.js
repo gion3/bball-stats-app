@@ -91,9 +91,63 @@ const getTotalPointsFromGameId = (req,res) =>{
     });
 }
 
+const getMostRecentGames = (req,res) =>{
+    const sql = `SELECT DISTINCT GAME_ID, GAME_DATE FROM game_logs LIMIT 50`;
+
+    db.all(sql, [], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        if (!rows || rows.length === 0) {
+            return res.status(404).json({ message: "No games found!" });
+        }
+
+        // 2. Parse game_date and add as parsedDate property
+        const gamesWithParsedDate = rows.map(row => ({
+            ...row,
+            parsedDate: new Date(row.GAME_DATE)
+        }));
+
+        console.log(gamesWithParsedDate);
+        console.log('test');
+
+        // 3. Sort by parsedDate descending
+        gamesWithParsedDate.sort((a, b) => b.parsedDate - a.parsedDate);
+
+        // 4. Take the first 10
+        const mostRecentGames = gamesWithParsedDate.slice(0, 5);
+
+        res.json(mostRecentGames);
+    });
+}
+
+const getMetaDataById = (req,res) =>{
+    const sql = `
+    SELECT GAME_DATE, MATCHUP
+    FROM game_logs
+    WHERE GAME_ID = ?
+    LIMIT 1
+    `;
+    const {id} = req.params;
+
+    db.get(sql, [id], (err,row) => {
+        if(err){
+            res.status(500).json({error:err.message});
+        }
+        else if (!row){
+            res.status(404).json({message: "Game not found!"});
+        }
+        else{
+            res.json(row);
+        }
+    });
+}
+
 module.exports = {
     getGameById,
     getTeamIdsFromGameId,
     getTeamScoreFromTeamGameId,
-    getTotalPointsFromGameId
+    getTotalPointsFromGameId,
+    getMostRecentGames,
+    getMetaDataById
 }
