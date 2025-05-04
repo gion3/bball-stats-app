@@ -26,10 +26,12 @@ const getGameById = (req,res) =>{
 
 const getTeamIdsFromGameId = (req,res) =>{
   const sql = `
-    SELECT DISTINCT p.TEAM_ID
+    SELECT DISTINCT p.TEAM_ID, t.TEAM_NAME
     FROM game_logs g
-	  JOIN player_stats p
-	  ON g.PLAYER_ID = p.PLAYER_ID
+	JOIN player_stats p
+	ON g.PLAYER_ID = p.PLAYER_ID
+    JOIN team_stats t
+    ON p.TEAM_ID = t.TEAM_ID
     WHERE g.GAME_ID = ?`;
     const {id} = req.params;
 
@@ -92,7 +94,7 @@ const getTotalPointsFromGameId = (req,res) =>{
 }
 
 const getMostRecentGames = (req,res) =>{
-    const sql = `SELECT DISTINCT GAME_ID, GAME_DATE FROM game_logs LIMIT 50`;
+    const sql = `SELECT DISTINCT GAME_ID, GAME_DATE FROM game_logs`;
 
     db.all(sql, [], (err, rows) => {
         if (err) {

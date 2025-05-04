@@ -1,7 +1,8 @@
-import { FiSettings } from "react-icons/fi"; 
+import { FiSettings, FiUser } from "react-icons/fi"; 
 import { auth } from "../firebaseConfig";
 import { NavLink } from "react-router-dom";
 import SearchBar from "./SearchBar/SearchBar";
+import { signOut } from "firebase/auth";
 
 function Header() {
   return (
@@ -16,6 +17,9 @@ function Header() {
         <SearchBar />
         <NavLink to="/settings">
           <FiSettings className="text-xl cursor-pointer hover:text-gray-400" />
+        </NavLink>
+        <NavLink to="/profile">
+          <FiUser className="text-xl cursor-pointer hover:text-gray-400" />
         </NavLink>
         <button className="cursor-pointer hover:text-gray-400" onClick={() => signOut(auth)}>Logout</button>
       </div>

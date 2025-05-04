@@ -42,12 +42,17 @@ const getTweet = async (req, res) => {
     Make sure to include the final score in your tweet. 
     Here is the current game's boxscore in JSON format:`
 
-    const teamIds = await fetch(`http://localhost:5000/api/teams/game/${gameId}/teams`)
+    const teamInfoResponse = await fetch(`http://localhost:5000/api/teams/game/${gameId}/teams`)
     .then(response => response.json())
     .catch(error => console.error(error));
 
-    const team1_id = teamIds[0]?.TEAM_ID;
-    const team2_id = teamIds[1]?.TEAM_ID;
+    const [team1,team2] = teamInfoResponse;
+
+    const team1_id = team1.TEAM_ID;
+    const team1_name = team1.TEAM_NAME;
+
+    const team2_id = team2.TEAM_ID;
+    const team2_name = team2.TEAM_NAME;
 
     const teams_score = await fetch(`http://localhost:5000/api/teams/game/${gameId}/final-score`)
         .then(response => response.json())
@@ -67,7 +72,7 @@ const getTweet = async (req, res) => {
 
     const boxscoreStr = JSON.stringify(boxscore, null,2);
 
-    const finalScoreText = `The final score of the game was: ${team1_id}: ${team1_score_str}, ${team2_id}: ${team2_score_str}`;
+    const finalScoreText = `The final score of the game was: ${team1_name}(ID: ${team1_id}): ${team1_score_str} - ${team2_name}(ID: ${team2_id}): ${team2_score_str}`;
 
     const ai_input = prompt + boxscoreStr + finalScoreText;
 
