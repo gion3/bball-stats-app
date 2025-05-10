@@ -109,10 +109,31 @@ const getPlayerByName = (req,res) =>{
   });
 }
 
+const getPlayerShots = (req,res) =>{
+  const sql = `
+  SELECT LOC_X, LOC_Y, SHOT_MADE_FLAG, SHOT_ZONE_BASIC 
+  FROM shots 
+  WHERE PLAYER_ID = ?
+  `
+  const {id} = req.params;
+  db.all(sql, [id], (err,row) => {
+    if(err){
+      res.status(500).json({error:err.message});
+    }
+    else if (!row){
+      res.status(404).json({message: "Player not found!"});
+    }
+    else{
+      res.json(row);
+    }
+  });
+}
+
 module.exports = { 
     getAllPlayers,
     getPlayerById,
     getTop10Players,
     getPlayerSeasonStats,
     getPlayerByName,
+    getPlayerShots
 };

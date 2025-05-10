@@ -2,6 +2,8 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
 import "./PlayerPage.css";
+import ShotChart from '../ShotChart/ShotChart';
+import ShotHeatMap from '../ShotHeatMap/ShotHeatMap';
 
 const PlayerPage = () => {
     const { playerId } = useParams();
@@ -113,6 +115,14 @@ const PlayerPage = () => {
                 </div>
                 <img className='team-logo' src={`/team_logos/${player.team_id}.png`} alt={player.team_name} />
                 
+            </div>
+            <div className='chart-container'>
+                <div className='chart-box'>
+                    <ShotChart playerId={playerId}/>
+                </div>
+                <div className='chart-box'>
+                    <ShotHeatMap playerId={playerId}/>
+                </div>
             </div>
             <div className='table-wrapper'>
                 <div className="pagination-controls">

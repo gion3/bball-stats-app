@@ -135,3 +135,15 @@ th,td {
     color: #111;
     letter-spacing: 1px;
 }
+
+.chart-container{
+    display: flex;
+    justify-content: space-evenly;
+    gap: 20px;
+}
+
+.chart-box{
+    flex: 1;
+    min-width: 500px;
+    min-height: 500px;
+}
