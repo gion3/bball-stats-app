@@ -138,12 +138,11 @@ th,td {
 
 .chart-container{
     display: flex;
-    justify-content: space-evenly;
-    gap: 20px;
+    justify-content: center;
 }
 
-.chart-box{
-    flex: 1;
-    min-width: 500px;
-    min-height: 500px;
+h2{
+    font-size: 2rem;
+    font-weight: 700;
+    justify-self: center;
 }

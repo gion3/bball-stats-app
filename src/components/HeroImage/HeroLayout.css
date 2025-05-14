@@ -1,0 +1,102 @@
+/* HeroLayout.css */
+
+:root {
+  --primary-color: #212121;
+  --secondary-color: #777;
+  --accent-color: #007aff;
+  --bg-color: #fff;
+  --text-bg: rgba(255, 255, 255, 0.85);
+  --font-sans: 'Helvetica Neue', Arial, sans-serif;
+}
+
+.hero-wrapper {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  width: 100%;
+  height: 43vh;
+  overflow: hidden;
+  background-color: var(--bg-color);
+}
+
+.hero-text-box {
+  flex: 1;
+  max-width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* vertical center */
+  align-items: center;    /* horizontal center within left half */
+  padding: 2rem;
+  box-sizing: border-box;
+  background: var(--text-bg);
+  margin: 2rem;
+  border-radius: 1rem;
+  z-index: 1;
+}
+
+.hero-title {
+  font-family: var(--font-sans);
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0 0 1rem;
+  text-align: center;
+}
+
+.hero-text {
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--secondary-color);
+  margin: 0;
+  text-align: center;
+}
+
+.hero-img-container {
+  position: relative;
+  flex: 1;
+  max-width: 50%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.hero-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center -50px;
+}
+
+/* Fade overlay on left side of image */
+.hero-img-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(to right, var(--bg-color) 0%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .hero-wrapper {
+    flex-direction: column;
+    height: auto;
+  }
+  .hero-text-box,
+  .hero-img-container {
+    max-width: 100%;
+    margin: 1rem 0;
+  }
+  .hero-img-container {
+    height: 50vh;
+  }
+  .hero-img-container::before {
+    width: 100%;
+    background: linear-gradient(to bottom, var(--bg-color) 0%, rgba(255,255,255,0) 100%);
+  }
+}

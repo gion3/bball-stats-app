@@ -116,14 +116,7 @@ const PlayerPage = () => {
                 <img className='team-logo' src={`/team_logos/${player.team_id}.png`} alt={player.team_name} />
                 
             </div>
-            <div className='chart-container'>
-                <div className='chart-box'>
-                    <ShotChart playerId={playerId}/>
-                </div>
-                <div className='chart-box'>
-                    <ShotHeatMap playerId={playerId}/>
-                </div>
-            </div>
+            <h2> {player.name} Game-by-Game</h2>
             <div className='table-wrapper'>
                 <div className="pagination-controls">
                     <button onClick={() => setPageIndex(old => Math.max(old - 1, 0))} disabled={pageIndex === 0}>
@@ -159,6 +152,12 @@ const PlayerPage = () => {
                         ))}
                     </tbody>
                 </table>
+                <h2> {player.name} Shot Chart</h2>
+                <div className='chart-container'>
+                    <div className='chart-box'>
+                        <ShotChart playerId={playerId}/>
+                    </div>
+            </div>
             </div>
         </div>
     );
