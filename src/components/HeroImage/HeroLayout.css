@@ -24,8 +24,8 @@
   max-width: 50%;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* vertical center */
-  align-items: center;    /* horizontal center within left half */
+  justify-content: center;
+  align-items: center;    
   padding: 2rem;
   box-sizing: border-box;
   background: var(--text-bg);

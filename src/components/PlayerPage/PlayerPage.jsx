@@ -97,6 +97,29 @@ const PlayerPage = () => {
         color: `${player.color2}`
     }
 
+    //calculare footer tabel
+    const totalSeasonStats = stats.reduce((acc,player) => {
+        acc.points += player.PTS || 0;
+        acc.rebounds += player.REB || 0;
+        acc.assists += player.AST || 0;
+        acc.fgMade += player.FGM || 0;
+        acc.fgAtt += player.FGA || 0;
+        acc.threePtMade += player.FG3M || 0;
+        acc.threePtAtt += player.FG3A || 0;
+        return acc;
+    }, {
+        points: 0,
+        rebounds: 0,
+        assists: 0,
+        fgMade: 0,
+        fgAtt: 0,
+        threePtMade: 0,
+        threePtAtt: 0,
+    });
+
+    totalSeasonStats.fgPct = totalSeasonStats.fgAtt ? (totalSeasonStats.fgMade / totalSeasonStats.fgAtt * 100).toFixed(1) : 0.0;
+    totalSeasonStats.threePct = totalSeasonStats.threePtAtt ? (totalSeasonStats.threePtMade / totalSeasonStats.threePtAtt * 100).toFixed(1) : 0.0;
+
     return (
         <div>
             <div className='player-page-header' style={header_background_style}>
@@ -151,11 +174,44 @@ const PlayerPage = () => {
                             </tr>
                         ))}
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            {table.getFlatHeaders().map(header => {
+                            const columnId = header.column.id;
+
+                            let footerValue = '';
+                            switch (columnId) {
+                                case 'GAME_DATE':
+                                footerValue = 'Totals: ';
+                                break;
+                                case 'PTS':
+                                footerValue = totalSeasonStats.points;
+                                break;
+                                case 'REB':
+                                footerValue = totalSeasonStats.rebounds;
+                                break;
+                                case 'AST':
+                                footerValue = totalSeasonStats.assists;
+                                break;
+                                case 'FG_PCT':
+                                footerValue = `${totalSeasonStats.fgPct}%`;
+                                break;
+                                case 'FG3_PCT':
+                                footerValue = `${totalSeasonStats.threePct}%`;
+                                break;
+                                default:
+                                footerValue = ''; 
+                            }
+
+                            return <td key={header.id}><strong>{footerValue}</strong></td>;
+                            })}
+                        </tr>
+                    </tfoot>
                 </table>
                 <h2> {player.name} Shot Chart</h2>
                 <div className='chart-container'>
                     <div className='chart-box'>
-                        <ShotChart playerId={playerId}/>
+                        <ShotChart player={player} totalSeasonStats={totalSeasonStats}/>
                     </div>
             </div>
             </div>

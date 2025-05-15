@@ -3,14 +3,14 @@ import { Scatter } from 'react-chartjs-2';
 import halfcourtImg from '../../assets/halfcourt.png'
 import 'chart.js/auto';
 
-function ShotChart({ playerId }) {
+function ShotChart({ player, totalSeasonStats }) {
   const [shots, setShots] = useState([]);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/players/shots/${playerId}`)
+    fetch(`http://localhost:5000/api/players/shots/${player.id}`)
       .then(res => res.json())
       .then(data => setShots(data));
-  }, [playerId]);
+  }, [player.id]);
 
   const data = {
     datasets: [
@@ -27,9 +27,33 @@ function ShotChart({ playerId }) {
     ]
   };
 
+  function getShotDistanceInMeters(x, y) {
+  const distanceInPixels = Math.sqrt(x * x + y * y);
+  const pixelToMeter = 0.028;
+  const distanceInMeters = distanceInPixels * pixelToMeter;
+  return distanceInMeters.toFixed(2);
+  }
+
+
   const config = {
     data: data,
     options: {
+      plugins:{
+        tooltip:{
+          callbacks:{
+            label: function(context){
+              const shotX = context.parsed.x;
+              const shotY = context.parsed.y;
+              const distance = getShotDistanceInMeters(shotX,shotY);
+              if(distance > 6.20){
+                return `Distance: ${distance} metres, 3PT%: ${totalSeasonStats.threePct}`;
+              }
+              return `Distance: ${distance} metres, FG%: ${totalSeasonStats.fgPct}`;
+              
+            }
+          }
+        }
+      },
       responsive: true,
       maintainAspectRatio: false,
       scales:{

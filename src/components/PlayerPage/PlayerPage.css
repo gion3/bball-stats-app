@@ -5,7 +5,7 @@ table{
     border: 3px solid blue;
 }
 
-tbody td{
+tbody td, tfoot{
     text-align: center;
 }
 
