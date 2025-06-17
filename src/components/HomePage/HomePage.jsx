@@ -5,6 +5,7 @@ import './HomePage.css';
 import heroImg from '../../assets/lebron-hero.webp';
 import React from 'react';
 import HeroLayout from "../HeroImage/HeroLayout";
+import Standings from "../Standings/Standings";
 
 
 const HomePage = () =>{
@@ -25,6 +26,8 @@ const HomePage = () =>{
   return (
     <>
     <HeroLayout imageUrl={heroImg}></HeroLayout>
+    <h1>Standings</h1>
+    <Standings></Standings>
     <h1>League leaders</h1>
     <PlayerCarousel playerIds={top10PlayerIds} />
     </>

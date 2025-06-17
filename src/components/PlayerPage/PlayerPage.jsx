@@ -4,6 +4,7 @@ import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-tabl
 import "./PlayerPage.css";
 import ShotChart from '../ShotChart/ShotChart';
 import ShotHeatMap from '../ShotHeatMap/ShotHeatMap';
+import { exportToCSV, exportToExcel } from '../../utils/exportUtils';
 
 const PlayerPage = () => {
     const { playerId } = useParams();
@@ -78,9 +79,10 @@ const PlayerPage = () => {
                     total_pts: data.PTS,
                     total_ast: data.AST,
                     total_reb: data.REB,
-                    ppg: (data.PTS / 82).toFixed(1),
-                    apg: (data.AST / 82).toFixed(1),
-                    rpg: (data.REB / 82).toFixed(1),
+                    games_played: data.GAMES_PLAYED,
+                    ppg: data.GAMES_PLAYED ? (data.PTS / data.GAMES_PLAYED).toFixed(1) : '0.0',
+                    apg: data.GAMES_PLAYED ? (data.AST / data.GAMES_PLAYED).toFixed(1) : '0.0',
+                    rpg: data.GAMES_PLAYED ? (data.REB / data.GAMES_PLAYED).toFixed(1) : '0.0',
                     color1: data.COLOR1,
                     color2: data.COLOR2,
                 }
@@ -120,6 +122,64 @@ const PlayerPage = () => {
     totalSeasonStats.fgPct = totalSeasonStats.fgAtt ? (totalSeasonStats.fgMade / totalSeasonStats.fgAtt * 100).toFixed(1) : 0.0;
     totalSeasonStats.threePct = totalSeasonStats.threePtAtt ? (totalSeasonStats.threePtMade / totalSeasonStats.threePtAtt * 100).toFixed(1) : 0.0;
 
+    const handleExportCSV = () => {
+        const exportData = stats.map(game => ({
+            'Game Date': game.GAME_DATE,
+            'Matchup': game.MATCHUP,
+            'Result': game.WL,
+            'Minutes': game.MIN,
+            'Points': game.PTS,
+            'Rebounds': game.REB,
+            'Assists': game.AST,
+            'Field Goals Made': game.FGM,
+            'Field Goals Attempted': game.FGA,
+            'Field Goal %': (game.FG_PCT * 100).toFixed(1),
+            '3-Pointers Made': game.FG3M,
+            '3-Pointers Attempted': game.FG3A,
+            '3-Point %': (game.FG3_PCT * 100).toFixed(1),
+            'Free Throws Made': game.FTM,
+            'Free Throws Attempted': game.FTA,
+            'Free Throw %': (game.FT_PCT * 100).toFixed(1),
+            'Offensive Rebounds': game.OREB,
+            'Defensive Rebounds': game.DREB,
+            'Steals': game.STL,
+            'Blocks': game.BLK,
+            'Turnovers': game.TOV,
+            'Personal Fouls': game.PF,
+            'Plus/Minus': game.PLUS_MINUS
+        }));
+        exportToCSV(exportData, `${player.name}_stats`);
+    };
+
+    const handleExportExcel = () => {
+        const exportData = stats.map(game => ({
+            'Game Date': game.GAME_DATE,
+            'Matchup': game.MATCHUP,
+            'Result': game.WL,
+            'Minutes': game.MIN,
+            'Points': game.PTS,
+            'Rebounds': game.REB,
+            'Assists': game.AST,
+            'Field Goals Made': game.FGM,
+            'Field Goals Attempted': game.FGA,
+            'Field Goal %': (game.FG_PCT * 100).toFixed(1),
+            '3-Pointers Made': game.FG3M,
+            '3-Pointers Attempted': game.FG3A,
+            '3-Point %': (game.FG3_PCT * 100).toFixed(1),
+            'Free Throws Made': game.FTM,
+            'Free Throws Attempted': game.FTA,
+            'Free Throw %': (game.FT_PCT * 100).toFixed(1),
+            'Offensive Rebounds': game.OREB,
+            'Defensive Rebounds': game.DREB,
+            'Steals': game.STL,
+            'Blocks': game.BLK,
+            'Turnovers': game.TOV,
+            'Personal Fouls': game.PF,
+            'Plus/Minus': game.PLUS_MINUS
+        }));
+        exportToExcel(exportData, `${player.name}_stats`);
+    };
+
     return (
         <div>
             <div className='player-page-header' style={header_background_style}>
@@ -141,15 +201,25 @@ const PlayerPage = () => {
             </div>
             <h2> {player.name} Game-by-Game</h2>
             <div className='table-wrapper'>
-                <div className="pagination-controls">
-                    <button onClick={() => setPageIndex(old => Math.max(old - 1, 0))} disabled={pageIndex === 0}>
-                        Previous
-                    </button>
-                    <span>Page {pageIndex + 1} of {Math.ceil(stats.length / pageSize)}</span>
-                    <button onClick={() => setPageIndex(old => Math.min(old + 1, Math.ceil(stats.length / pageSize) - 1))}
-                            disabled={pageIndex >= Math.ceil(stats.length / pageSize) - 1}>
-                        Next
-                    </button>
+                <div className="table-controls">
+                    <div className="export-controls">
+                        <button onClick={handleExportCSV} className="export-button">
+                            Export to CSV
+                        </button>
+                        <button onClick={handleExportExcel} className="export-button">
+                            Export to Excel
+                        </button>
+                    </div>
+                    <div className="pagination-controls">
+                        <button onClick={() => setPageIndex(old => Math.max(old - 1, 0))} disabled={pageIndex === 0}>
+                            Previous
+                        </button>
+                        <span>Page {pageIndex + 1} of {Math.ceil(stats.length / pageSize)}</span>
+                        <button onClick={() => setPageIndex(old => Math.min(old + 1, Math.ceil(stats.length / pageSize) - 1))}
+                                disabled={pageIndex >= Math.ceil(stats.length / pageSize) - 1}>
+                            Next
+                        </button>
+                    </div>
                 </div>
                 <table>
                     <thead>
@@ -213,7 +283,7 @@ const PlayerPage = () => {
                     <div className='chart-box'>
                         <ShotChart player={player} totalSeasonStats={totalSeasonStats}/>
                     </div>
-            </div>
+                </div>
             </div>
         </div>
     );

@@ -9,6 +9,11 @@ const PlayerCard = ({playerId}) => {
   useEffect(() => {
         if (!playerId) return;
 
+        // fetch(`http://localhost:5000/api/players/averages/${playerId}`)
+        // .then((response) => response.json())
+        // .then((data) => setPlayer(data))
+        
+
         fetch(`http://localhost:5000/api/players/${playerId}`)
             .then((response) => response.json())
             .then((data) => {
@@ -21,9 +26,10 @@ const PlayerCard = ({playerId}) => {
                     total_pts: data.PTS,
                     total_ast: data.AST,
                     total_reb: data.REB,
-                    ppg: (data.PTS / 82).toFixed(2),
-                    apg: (data.AST / 82).toFixed(2),
-                    rpg: (data.REB / 82).toFixed(2),
+                    games_played: data.GAMES_PLAYED,
+                    ppg: (data.PTS / data.GAMES_PLAYED).toFixed(2),
+                    apg: (data.AST / data.GAMES_PLAYED).toFixed(2),
+                    rpg: (data.REB / data.GAMES_PLAYED).toFixed(2),
                     color1: data.COLOR1,
                     color2: data.COLOR2,
                 }

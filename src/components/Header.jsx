@@ -11,6 +11,8 @@ function Header() {
         <NavLink to="/" className="hover:text-gray-400">LOGO</NavLink>
         <NavLink to="/" className="hover:text-gray-400">Home</NavLink>
         <NavLink to="/news" className="hover:text-gray-400">News</NavLink>
+        <NavLink to="/admin" className="hover:text-gray-400">Admin</NavLink>
+        <NavLink to="/my-team" className="hover:text-gray-400">MyTeam</NavLink>
       </nav>
 
       <div className="flex items-center gap-4">

@@ -1,0 +1,212 @@
+.profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-avatar img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #f0f0f0;
+}
+
+.profile-info h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: #333;
+}
+
+.profile-info .email {
+    color: #666;
+    margin: 0.5rem 0;
+}
+
+.profile-info .join-date {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.profile-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 1rem;
+}
+
+.profile-tabs button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: none;
+    font-size: 1rem;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.profile-tabs button:hover {
+    background: #f5f5f5;
+}
+
+.profile-tabs button.active {
+    background: #007bff;
+    color: white;
+}
+
+.profile-content {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-card h3 {
+    margin: 0;
+    color: #666;
+    font-size: 1rem;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #007bff;
+    margin: 0.5rem 0 0;
+}
+
+/* Best Players Section */
+.best-players {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.best-players h3 {
+    margin: 0 0 1rem;
+    color: #333;
+}
+
+.best-players ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.best-players li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.best-players li:last-child {
+    border-bottom: none;
+}
+
+/* Leagues Section */
+.leagues-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.league-card {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.league-card:hover {
+    transform: translateY(-2px);
+}
+
+.league-card h3 {
+    margin: 0 0 0.5rem;
+    color: #333;
+}
+
+.league-card p {
+    margin: 0;
+    color: #666;
+}
+
+/* Settings Section */
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.setting-card {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.setting-card:hover {
+    background: #e9ecef;
+}
+
+.setting-card h3 {
+    margin: 0 0 0.5rem;
+    color: #333;
+}
+
+.setting-card p {
+    margin: 0;
+    color: #666;
+}
+
+/* Activity Section */
+.activity-feed {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    min-height: 200px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-tabs {
+        flex-wrap: wrap;
+    }
+
+    .profile-tabs button {
+        flex: 1 1 calc(50% - 0.5rem);
+    }
+}
