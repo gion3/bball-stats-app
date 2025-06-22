@@ -8,7 +8,7 @@ function Header() {
   return (
     <header className="w-full bg-gray-900 text-white py-4 px-6 flex justify-between items-center">
       <nav className="flex gap-6">
-        <NavLink to="/" className="hover:text-gray-400">LOGO</NavLink>
+        <NavLink to="/" className="hover:text-gray-400">BSH</NavLink>
         <NavLink to="/" className="hover:text-gray-400">Home</NavLink>
         <NavLink to="/news" className="hover:text-gray-400">News</NavLink>
         <NavLink to="/admin" className="hover:text-gray-400">Admin</NavLink>

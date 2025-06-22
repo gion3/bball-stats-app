@@ -26,12 +26,25 @@ const LoginPage = () => {
             return;
         }
         try {
+            let userCredential;
             if (isLogin) {
-              await signInWithEmailAndPassword(auth, email, password);
+                userCredential = await signInWithEmailAndPassword(auth, email, password);
             } else {
-              const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
-              await updateProfile(userCredentials.user, { displayName: username });
+                userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await updateProfile(userCredential.user, { displayName: username });
             }
+
+            const idToken = await userCredential.user.getIdToken();
+
+            // Make API call to the backend to sync user
+            await fetch('http://localhost:5000/api/users/sync', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token: idToken }),
+            });
+            
             navigate("/");
           } catch (err) {
             setError(err.message);

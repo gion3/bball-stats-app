@@ -8,7 +8,7 @@ import { getAuth } from "firebase/auth";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyBQvuY42kZ7cbZ6FGB9GTmsYDP0tbfvqyk",
+  apiKey: "AIzaSyBQvuY42kZ7cbZ6FGB9GTmsYDP0tbfvqyk", //TODO: put in env variable
   authDomain: "bball-stats-app.firebaseapp.com",
   projectId: "bball-stats-app",
   storageBucket: "bball-stats-app.firebasestorage.app",

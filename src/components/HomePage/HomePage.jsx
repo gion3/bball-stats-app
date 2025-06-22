@@ -26,9 +26,9 @@ const HomePage = () =>{
   return (
     <>
     <HeroLayout imageUrl={heroImg}></HeroLayout>
-    <h1>Standings</h1>
-    <Standings></Standings>
-    <h1>League leaders</h1>
+    {/* <h1>Standings</h1>
+    <Standings></Standings>*/}
+    <h1>League leaders</h1> 
     <PlayerCarousel playerIds={top10PlayerIds} />
     </>
   );
