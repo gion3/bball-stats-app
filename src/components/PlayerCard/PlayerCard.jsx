@@ -32,6 +32,7 @@ const PlayerCard = ({playerId}) => {
                     rpg: (data.REB / data.GAMES_PLAYED).toFixed(2),
                     color1: data.COLOR1,
                     color2: data.COLOR2,
+                    price: data.fantasy_price,
                 }
                 setPlayer(mutations)
             })
@@ -56,7 +57,8 @@ const PlayerCard = ({playerId}) => {
             <p className='player-team'>{player.team_name}</p>
         </div>
         <div className='player-details'>
-            <p><strong>Age: {player.age}</strong></p>
+            <p>Cost <strong className='player-cost-text'>{player.price}</strong> FTP</p>
+            {/*<p>Age: <strong>{player.age}</strong> - Cost: <strong>{player.price}</strong> FTP</p>*/}
             <div className='player-stats'>
                 <div className='stat'>
                     <span className='label'>PPG: </span>

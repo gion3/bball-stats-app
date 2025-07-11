@@ -54,8 +54,13 @@
 .player-details p {
     margin: 5px 0 15px;
     font-size: 16px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
 }
-  
+.player-cost-text{
+  font-size: 20px;
+}
 .player-stats {
     display: flex;
     justify-content: space-between;

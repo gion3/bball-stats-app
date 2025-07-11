@@ -1,45 +1,225 @@
-.login-container{
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-}
-.login-form{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    padding: 20px;
-}
-
-.login-form input{
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 300px;
+.hooppanel-login-bg {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
+  background: linear-gradient(135deg, #0a2342 0%, #19376d 100%);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
 }
 
-.login-form button{
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: #004a99;
-    color: #fff;
-    cursor: pointer;
+.hooppanel-login-bg .hooppanel-header {
+  text-align: center;
+  margin-top: 2rem;
 }
 
-.login-form button:hover{
-    background-color: #00295c;
+.hooppanel-login-bg .hooppanel-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 2px 8px #ff7f11cc);
 }
 
-.toggle-button{
-    text-decoration: underline;
-    &:hover{
-        color: #00295c;
-        cursor:pointer;
-    }
+.hooppanel-login-bg .hooppanel-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #ff7f11;
+  letter-spacing: 2px;
+  margin: 0;
+  text-shadow: 0 2px 8px #000a;
 }
 
-.h1{
-    font-size: 2rem;
+.hooppanel-login-bg .hooppanel-tagline {
+  color: #fff;
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 4px #0008;
+}
+
+.hooppanel-login-bg .hooppanel-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.hooppanel-login-bg .hooppanel-login-card {
+  background: rgba(255,255,255,0.13);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 24px;
+  border: 1.5px solid rgba(255,255,255,0.18);
+  padding: 2.5rem 2rem 2rem 2rem;
+  min-width: 320px;
+  max-width: 370px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.hooppanel-login-bg .hooppanel-login-card:before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -32px;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 8px;
+  background: repeating-linear-gradient(90deg, #ff7f11, #ff7f11 8px, #fff 8px, #fff 16px);
+  border-radius: 4px;
+  opacity: 0.7;
+}
+
+.hooppanel-login-bg .hooppanel-login-card h2 {
+  color: #fff;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 4px #0008;
+}
+
+.hooppanel-login-bg .login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.hooppanel-login-bg .login-form input {
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255,255,255,0.85);
+  font-size: 1rem;
+  color: #0a2342;
+  font-weight: 600;
+  outline: none;
+  transition: box-shadow 0.2s;
+  box-shadow: 0 2px 8px #0001;
+}
+
+.hooppanel-login-bg .login-form input:focus {
+  box-shadow: 0 0 0 2px #ff7f11;
+}
+
+.hooppanel-login-bg .hooppanel-btn {
+  background: linear-gradient(90deg, #ff7f11 60%, #ffb627 100%);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 8px;
+  padding: 0.9rem 0;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #ff7f1133;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.hooppanel-login-bg .hooppanel-btn:active {
+  transform: scale(0.98);
+}
+
+.hooppanel-login-bg .toggle-link {
+  margin-top: 1.2rem;
+  text-align: center;
+}
+
+.hooppanel-login-bg .toggle-button {
+  background: none;
+  border: none;
+  color: #ff7f11;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 1rem;
+  margin-left: 0.2rem;
+}
+
+.hooppanel-login-bg .error-message {
+  color: #ff3b3b;
+  background: #fff3;
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.hooppanel-login-bg .hooppanel-footer {
+  width: 100%;
+  text-align: center;
+  padding: 1.2rem 0 0.7rem 0;
+  background: transparent;
+  color: #fff;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hooppanel-login-bg .hooppanel-footer nav {
+  margin-bottom: 0.3rem;
+}
+
+.hooppanel-login-bg .hooppanel-footer a {
+  color: #ffb627;
+  margin: 0 1.2rem;
+  text-decoration: none;
+  font-weight: 700;
+  transition: color 0.2s;
+}
+
+.hooppanel-login-bg .hooppanel-footer a:hover {
+  color: #fff;
+}
+
+/* Basketball court lines (background accent) */
+.hooppanel-login-bg:after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 90vw;
+  height: 90vh;
+  max-width: 900px;
+  max-height: 700px;
+  transform: translate(-50%, -50%);
+  background: url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" viewBox="0 0 900 700" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="450" cy="350" rx="400" ry="300" stroke="%23ff7f11" stroke-width="8" fill="none" opacity="0.12"/><rect x="100" y="100" width="700" height="500" rx="80" stroke="%23fff" stroke-width="6" fill="none" opacity="0.09"/><ellipse cx="450" cy="350" rx="120" ry="90" stroke="%23fff" stroke-width="4" fill="none" opacity="0.13"/></svg>');
+  pointer-events: none;
+  z-index: 0;
+}
+
+@media (max-width: 600px) {
+  .hooppanel-login-bg .hooppanel-header {
+    margin-top: 1rem;
+  }
+  .hooppanel-login-bg .hooppanel-logo {
+    width: 56px;
+    height: 56px;
+  }
+  .hooppanel-login-bg .hooppanel-title {
+    font-size: 1.6rem;
+  }
+  .hooppanel-login-bg .hooppanel-login-card {
+    min-width: 90vw;
+    max-width: 98vw;
+    padding: 1.2rem 0.7rem 1.2rem 0.7rem;
+  }
+  .hooppanel-login-bg .hooppanel-main {
+    padding: 0 0.2rem;
+  }
 }

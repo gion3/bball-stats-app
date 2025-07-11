@@ -31,6 +31,23 @@ const {id} = req.params;
         return res.json(rows);
     })
 }
+//get stats for a player for the last round
+const getLastRoundStatsForPlayer = (req, res) =>{
+    const sql = `SELECT * FROM game_logs
+WHERE PLAYER_ID = ? AND
+ROUND_NO < (SELECT crt_round FROM app_settings where id= 1)
+ORDER BY ROUND_NO desc
+LIMIT 1`
+const {id} = req.params;
+
+    db.get(sql, [id], (err, rows)=>{
+        if(err){
+            return res.status(500).json({ message: 'Database error', error: err.message });
+        }
+        return res.json(rows);
+    })
+}
+
 
 const getGameStatsForPlayer = (req, res) =>{
     const sql = `SELECT * FROM game_logs
@@ -49,8 +66,57 @@ const {playerId,gameId} = req.params;
     })
 }
 
+getCurrentRoundGames = async (req, res) => {
+    const { round_no } = req.params;
+
+    console.log(round_no)
+
+    const sql = `
+        SELECT game_id, MIN(MATCHUP) as MATCHUP, GAME_DATE
+        FROM game_logs
+        WHERE round_no = ?
+        GROUP BY game_id;
+    `;
+
+    db.all(sql, [round_no], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ message: 'Failed to fetch current round games', error: err.message });
+        }
+        return res.json(rows);
+    });
+};
+
+
+getCurrentRoundNumber = async (req,res) =>{
+    console.log('OK')
+    const sql = `
+    WITH ordered_games AS (
+            SELECT
+                game_id,
+                game_date,
+                ROW_NUMBER() OVER (ORDER BY game_date, game_id) AS rn
+            FROM (
+                SELECT DISTINCT game_id, game_date
+                FROM game_logs
+                WHERE game_date <= (SELECT crt_date FROM app_settings WHERE id = 1)
+            )
+            )
+            SELECT MAX(((rn - 1) / 15) + 1) AS current_round
+            FROM ordered_games;`
+    db.get(sql,[], (err,rows) =>{
+        if (err) {
+            return res.status(500).json({ message: 'Failed to fetch current round number', error: err.message });
+        }
+        return res.json(rows);
+    })
+}
+
 module.exports = {
     getNextRound,
     getLastGameStatsForPlayer,
     getGameStatsForPlayer,
+    getCurrentRoundGames,
+    getCurrentRoundNumber,
+    getLastRoundStatsForPlayer,
+    
 }

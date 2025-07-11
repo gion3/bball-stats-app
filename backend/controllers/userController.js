@@ -75,4 +75,18 @@ exports.syncUser = async (req, res) => {
     console.error('Error verifying token:', error.message);
     res.status(401).json({ message: 'Invalid token or authentication failed.', error: error.message });
   }
+};
+exports.getMe = async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'Authentication token required.' });
+  try {
+      const decodedToken = await admin.auth().verifyIdToken(token);
+      const { uid } = decodedToken;
+      db.get('SELECT id FROM users WHERE firebase_uid = ?', [uid], (err, user) => {
+          if (err || !user) return res.status(404).json({ message: 'User not found.' });
+          res.status(200).json({ id: user.id });
+      });
+  } catch (error) {
+      res.status(401).json({ message: 'Invalid or expired token.', error: error.message });
+  }
 }; 

@@ -24,6 +24,7 @@ dist-ssr
 *.sw?
 .env
 backend/config
+standings_algorithm_explanation.md
 
 # windsurf rules
 .windsurfrules

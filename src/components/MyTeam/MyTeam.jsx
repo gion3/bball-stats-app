@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { Line } from 'react-chartjs-2';
 import PlayerCard from '../PlayerCard/PlayerCard';
 import SimpleSearchBar from '../SearchBar/SimpleSearchBar'; // Assuming this component exists
 import './MyTeam.css';
+import { color } from 'd3';
 
 // Helper to get the auth token
 const getAuthToken = async () => {
@@ -14,11 +16,17 @@ const getAuthToken = async () => {
 
 const MyTeam = () => {
     // State Management
-    const [teams, setTeams] = useState([]);
-    const [selectedTeam, setSelectedTeam] = useState(null);
+    const [team, setTeam] = useState(null);
     const [allPlayers, setAllPlayers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredPlayers, setFilteredPlayers] = useState([]);
+    const [budget, setBudget] = useState(40); 
+    const [teamValue, setTeamValue] = useState(0);
+    const [currentRound, setCurrentRound] = useState(null);
+    const [scoreHistory, setScoreHistory] = useState([]);
+    const [totalScore, setTotalScore] = useState(null);
+    const [chartType, setChartType] = useState('scorePerRound');
+ 
 
     // Roster State
     const [roster, setRoster] = useState([]); // The "draft" roster of player IDs
@@ -27,6 +35,7 @@ const MyTeam = () => {
     const [nextGames, setNextGames] = useState([]); // To store upcoming games
     const [lastGameStats, setLastGameStats] = useState({});
     const [lastGameScores, setLastGameScores] = useState({});
+    const [lastGamePIR, setLastGamePIR] = useState({});
 
     // UI State
     const [loading, setLoading] = useState(true);
@@ -34,38 +43,64 @@ const MyTeam = () => {
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [newTeamName, setNewTeamName] = useState('');
 
+    //get local userId from firebaseUID
+    const fetchUserId = async (token) => {
+        const res = await fetch('http://localhost:5000/api/users/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Failed to fetch user ID');
+        const data = await res.json();
+        return data.id; 
+    };
+
+    //get user score history
+    useEffect(() => {
+        const fetchScoreHistory = async () => {
+            if (!team) return;
+            const token = await getAuthToken();
+            if (!token) return;
+            const userId = team.user_id || (await fetchUserId(token));
+            try {
+                const res = await fetch(`http://localhost:5000/api/fantasy/user/scorebyround/${userId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) throw new Error('Failed to fetch score history');
+                const data = await res.json();
+                setScoreHistory(data.scores || []);
+            } catch (err) {
+                setScoreHistory([]);
+            }
+        };
+        fetchScoreHistory();
+    }, [team]);
+
     // --- DATA FETCHING ---
-    const fetchUserTeams = useCallback(async (token) => {
+    const fetchUserTeam = useCallback(async (token) => {
         try {
             const response = await fetch('http://localhost:5000/api/fantasy/teams', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            if (!response.ok) throw new Error('Failed to fetch teams');
+            if (!response.ok) throw new Error('Failed to fetch team');
             const data = await response.json();
-            setTeams(data);
             if (data.length > 0) {
-                setSelectedTeam(data[0]);
+                setTeam(data[0]);
+                setBudget(data[0].budget || 40);
             }
-            return data;
+            return data[0];
         } catch (err) {
             setError(err.message);
-            return [];
+            return null;
         }
     }, []);
 
-    const fetchTeamRoster = useCallback(async (teamId, token) => {
-        try {
-            const response = await fetch(`http://localhost:5000/api/fantasy/teams/${teamId}/roster`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!response.ok) throw new Error('Failed to fetch roster');
-            const data = await response.json();
-            setRoster(data);
-            setInitialRoster(data);
-        } catch (err) {
-            setError(err.message);
-        }
-    }, []);
+    //calculate total score from round_score
+    const getTotalScoreEvolution = (scoreHistory) => {
+        let total = 0;
+        return scoreHistory.map(s => {
+            total += s.score_per_round;
+            return { ...s, total_score: total };
+        });
+    };
 
     // --- MAIN EFFECT FOR INITIAL LOAD ---
     useEffect(() => {
@@ -74,28 +109,73 @@ const MyTeam = () => {
             if (user) {
                 setLoading(true);
                 const token = await user.getIdToken();
-                await fetchUserTeams(token);
+                await fetchUserTeam(token);
                 // Fetch all players once
                 try {
                     const playersResponse = await fetch('http://localhost:5000/api/players/all-with-stats');
                     const playersData = await playersResponse.json();
                     setAllPlayers(playersData);
 
-                    const gamesResponse = await fetch('http://localhost:5000/api/games/next-round');
-                    const gamesData = await gamesResponse.json();
-                    setNextGames(gamesData);
+                    const currentRoundResponse = await fetch('http://localhost:5000/api/games/crt');
+                    const currentRoundData = await currentRoundResponse.json();
+                    setCurrentRound(currentRoundData.current_round);
+
+
+                    // const gamesResponse = await fetch(`http://localhost:5000/api/games/round/${currentRound}`);
+                    // const gamesData = await gamesResponse.json();
+                    // setNextGames(gamesData);
 
                 } catch (err) {
                     setError('Failed to fetch players or games.');
                 }
                 setLoading(false);
             } else {
-                setError('Please log in to see your teams.');
+                setError('Please log in to see your team.');
                 setLoading(false);
             }
         });
         return () => unsubscribe();
-    }, [fetchUserTeams]);
+    }, [fetchUserTeam]);
+
+    //get user total score
+    useEffect(() => {
+        const fetchTotalScore = async () => {
+            if (!team) return;
+            const token = await getAuthToken();
+            if (!token) return;
+            try {
+                // Use team.user_id if available, or fetch user ID as above
+                const userId = team.user_id || (await fetchUserId(token));
+                const res = await fetch(`http://localhost:5000/api/fantasy/user/totalscore/${userId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) throw new Error('Failed to fetch total score');
+                const data = await res.json();
+                setTotalScore(data.members?.[0]?.total_score ?? 0);
+            } catch (err) {
+                setTotalScore('N/A');
+            }
+        };
+        fetchTotalScore();
+    }, [team]);
+
+    //get upcoming games
+    useEffect(() => {
+        if (!currentRound) return;
+        const fetchGames = async () => {
+          try {
+            const res = await fetch(`http://localhost:5000/api/games/round/${currentRound}`);
+            const data = await res.json();
+            setNextGames(data);
+          } catch (err) {
+            setError("Failed to fetch games");
+          } finally {
+            setLoading(false);
+          }
+        };
+        fetchGames();
+    }, [currentRound]);
+   
 
     useEffect(() => {
         async function fetchStats() {
@@ -105,7 +185,7 @@ const MyTeam = () => {
             const res = await fetch(`http://localhost:5000/api/games/most-recent-game-player-row/${player.PLAYER_ID}`);
             const data = await res.json();
             stats[player.PLAYER_ID] = data;
-            // Calculate score using your formula
+            // Calculate score using formula
             if (data) {
               scores[player.PLAYER_ID] =
                 (data.PTS + data.REB + data.AST + data.STL + data.BLK) -
@@ -120,12 +200,23 @@ const MyTeam = () => {
     
     // --- DERIVED STATE & DEPENDENCY EFFECTS ---
     useEffect(() => {
-        if (selectedTeam) {
-            getAuthToken().then(token => {
-                if(token) fetchTeamRoster(selectedTeam.id, token);
-            });
+        async function fetchRoster() {
+            if (!team) return;
+            const token = await getAuthToken();
+            try {
+                const response = await fetch(`http://localhost:5000/api/fantasy/teams/roster`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Failed to fetch roster');
+                const data = await response.json();
+                setRoster(data);
+                setInitialRoster(data);
+            } catch (err) {
+                setError(err.message);
+            }
         }
-    }, [selectedTeam, fetchTeamRoster]);
+        fetchRoster();
+    }, [team]);
 
     useEffect(() => {
         setRosterPlayers(roster.map(id => allPlayers.find(p => p.PLAYER_ID === id)).filter(Boolean));
@@ -144,6 +235,15 @@ const MyTeam = () => {
         return sortedRoster.some((id, index) => id !== sortedInitial[index]);
     }, [roster, initialRoster]);
 
+    // Calculate team value whenever roster or allPlayers changes
+    useEffect(() => {
+        const value = roster.reduce((sum, id) => {
+            const player = allPlayers.find(p => p.PLAYER_ID === id);
+            return sum + (player ? Number(player.fantasy_price) : 0);
+        }, 0);
+        setTeamValue(value);
+    }, [roster, allPlayers]);
+
     // --- EVENT HANDLERS ---
     const handleAddPlayer = (playerId) => {
         if (roster.length < 5 && !roster.includes(playerId)) {
@@ -161,11 +261,15 @@ const MyTeam = () => {
             setError('Roster must have exactly 5 players to save.');
             return;
         }
+        if (teamValue > budget) {
+            setError('You are over budget!');
+            return;
+        }
         const token = await getAuthToken();
-        if (!token || !selectedTeam) return;
+        if (!token) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/fantasy/teams/${selectedTeam.id}/roster`, {
+            const response = await fetch(`http://localhost:5000/api/fantasy/teams/roster`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ playerIds: roster }),
@@ -190,20 +294,10 @@ const MyTeam = () => {
                 body: JSON.stringify({ teamName: newTeamName }),
             });
             if (!response.ok) throw new Error('Failed to create team');
-            
-            const newTeam = await response.json(); // Capture the new team's data
-
+            const newTeam = await response.json();
             setNewTeamName('');
             setShowCreateForm(false);
-            
-            // Refresh the teams list and automatically select the new one
-            await fetchUserTeams(token).then((fetchedTeams) => {
-                const justCreatedTeam = fetchedTeams.find(t => t.id === newTeam.teamId);
-                if (justCreatedTeam) {
-                    setSelectedTeam(justCreatedTeam);
-                }
-            });
-
+            setTeam({ id: newTeam.teamId, name: newTeam.teamName, budget: newTeam.budget });
         } catch (err) {
             setError(err.message);
         }
@@ -213,7 +307,7 @@ const MyTeam = () => {
     if (loading) return <div>Loading...</div>;
     if (error) return <div className="error-message">{error}</div>;
 
-    if (teams.length === 0 && !showCreateForm) {
+    if (!team && !showCreateForm) {
         // Special view for first-time users
         return (
             <div className="my-team-container centered-form">
@@ -231,20 +325,15 @@ const MyTeam = () => {
         return 'score-green';
     }
     
+    // Budget color logic
+    const overBudget = teamValue > budget;
+    const budgetClass = overBudget ? 'budget-over' : 'budget-ok';
+
+
     return (
+        
         <div className="my-team-container">
-            <header className="team-header">
-                <h1>My Teams</h1>
-                <div className="team-controls">
-                    <select
-                        value={selectedTeam?.id || ''}
-                        onChange={(e) => setSelectedTeam(teams.find(t => t.id === parseInt(e.target.value)))}
-                    >
-                        {teams.map(team => <option key={team.id} value={team.id}>{team.name}</option>)}
-                    </select>
-                    <button onClick={() => setShowCreateForm(true)} className="add-team-btn">+</button>
-                </div>
-            </header>
+            
 
             {showCreateForm && (
                 <form onSubmit={handleCreateTeam} className="create-team-form">
@@ -254,33 +343,50 @@ const MyTeam = () => {
                 </form>
             )}
 
-            <main className="team-content-area">
+           
+            <div className="top-flex-section">
                 <section className="roster-section">
-                    <h2>Current Roster</h2>
+                <div className="myteam-header-row">
+                    
+                        <h2 style={{color:"black", marginBottom: 0}}>MyTeam</h2>
+                        <h2 className="team-total-score" style={{color:"black", marginBottom: 0}}>
+                            Total score: {totalScore !== null ? totalScore : 'Loading...'}
+                        </h2>
+                        <h2 className={`team-budget ${budgetClass}`}>
+                            Budget: {teamValue}/{budget}
+                        </h2>
+                    
+                </div>
                     <div className="roster-grid">
                         {rosterPlayers.map(player => (
                             <div key={player.PLAYER_ID} onContextMenu={(e) => handleRemovePlayer(e, player.PLAYER_ID)}>
                                 <PlayerCard playerId={player.PLAYER_ID} />
                                 <div
                                 className={`player-scores-text ${
-                                    lastGameScores[player.PLAYER_ID] !== undefined
-                                    ? getScoreClass(lastGameScores[player.PLAYER_ID])
+                                    lastGameStats[player.PLAYER_ID]?.PIR !== undefined
+                                    ? getScoreClass(lastGameStats[player.PLAYER_ID]?.PIR)
                                     : ''
                                 }`}
                                 >
-                                Last Game Score: {lastGameScores[player.PLAYER_ID] !== undefined ? lastGameScores[player.PLAYER_ID] : 'Loading...'}
+                                Last Round Score: {lastGameStats[player.PLAYER_ID]?.PIR !== undefined ? parseFloat(lastGameStats[player.PLAYER_ID].PIR).toFixed(2) : 'N/A'}
                                 </div>
                             </div>
                         ))}
                     </div>
                     {hasUnsavedChanges && (
-                        <button onClick={handleSaveRoster} className="save-changes-btn" disabled={roster.length !== 5}>
+                        <button
+                            onClick={handleSaveRoster}
+                            className="save-changes-btn"
+                            disabled={roster.length !== 5 || overBudget}
+                            style={overBudget ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+                        >
                             Save Changes {roster.length !== 5 && "(5 players required)"}
+                            {overBudget && " (Over Budget)"}
                         </button>
                     )}
                 </section>
 
-                <aside className="available-players-section">
+                <div className="available-players-section">
                     <h2>Available Players</h2>
                     <SimpleSearchBar
                         searchTerm={searchTerm}
@@ -290,24 +396,77 @@ const MyTeam = () => {
                     <ul className="player-list">
                         {filteredPlayers.map(player => (
                             <li key={player.PLAYER_ID} onClick={() => handleAddPlayer(player.PLAYER_ID)}>
-                                <span>{player.PLAYER_NAME}</span>
-                                <span className="player-team-abbr">{player.TEAM_ABBREVIATION}</span>
+                                <span>{player.PLAYER_NAME} - {player.TEAM_ABBREVIATION}</span>
+                                <span><strong>{player.fantasy_price}</strong></span>
+                                
                             </li>
                         ))}
                     </ul>
-                </aside>
-            </main>
-
-            <section className="upcoming-games-section">
-                <h2>Upcoming Games</h2>
-                <div className="games-grid">
-                    {nextGames.map(game => (
-                        <div key={game.GAME_ID} className="game-matchup-box">
-                            {game.MATCHUP} - {game.gd}
-                        </div>
-                    ))}
                 </div>
-            </section>
+            </div>
+
+            
+            <div className="bottom-flex-section">
+                <section className="upcoming-games-section">
+                    <h2>Upcoming Games - Round {currentRound}</h2>
+                    <div className="games-grid">
+                        {nextGames.map(game => (
+                            <div key={game.GAME_ID} className="game-matchup-box">
+                                {game.MATCHUP}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+                {scoreHistory.length > 0 && (
+                    <div className="score-chart-section">
+                        <div style={{ marginBottom: 10 , color:"black"}}>
+                            <label htmlFor="chartType">Chart Type: </label>
+                            <select
+                                id="chartType"
+                                value={chartType}
+                                onChange={e => setChartType(e.target.value)}
+                            >
+                                <option value="scorePerRound">Score Per Round</option>
+                                <option value="totalScoreEvolution">Total Score</option>
+                            </select>
+                        </div>
+                        <Line
+                            data={{
+                                labels: scoreHistory.map(s => `${s.round_no}`),
+                                datasets: [
+                                    chartType === 'scorePerRound'
+                                        ? {
+                                            label: 'Score Per Round',
+                                            data: scoreHistory.map(s => s.score_per_round),
+                                            fill: false,
+                                            borderColor: '#1976d2',
+                                            backgroundColor: '#1976d2',
+                                            tension: 0.2,
+                                        }
+                                        : {
+                                            label: 'Total Score',
+                                            data: getTotalScoreEvolution(scoreHistory).map(s => s.total_score),
+                                            fill: false,
+                                            borderColor: '#43a047',
+                                            backgroundColor: '#43a047',
+                                        }
+                                ],
+                            }}
+                            options={{
+                                responsive: true,
+                                plugins: {
+                                    legend: { display: false },
+                                },
+                                scales: {
+                                    x: { title: { display: true, text: 'Round' } },
+                                    y: { title: { display: true, text: chartType === 'scorePerRound' ? 'Score' : 'Total Score' } },
+                                },
+                            }}
+                        />
+                    </div>
+                )}
+                
+            </div>
         </div>
     );
 };

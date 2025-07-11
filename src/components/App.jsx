@@ -11,8 +11,11 @@ import ProfilePage from "./ProfilePage/ProfilePage";
 import { SkeletonTheme } from "react-loading-skeleton";
 import AdminPanel from "./AdminPanel/AdminPanel";
 import MyTeam from "./MyTeam/MyTeam";
+import LeaguePage from "./LeaguePage/LeaguePage";
+import UserCreatedLeague from "./LeaguePage/UserCreatedLeague";
 import { auth } from "../firebaseConfig";
 import ScrollToTop from "./ScrollToTop";
+import LandingPage from "./LandingPage/LandingPage";
 
 function App() {
   
@@ -29,6 +32,9 @@ function App() {
       <Route path="/profile" element={<ProfilePage/>}/>
       <Route path="/admin" element={<AdminPanel/>}/>
       <Route path="/my-team" element={<MyTeam/>}/>
+      <Route path="/leagues" element={<LeaguePage/>}/>
+      <Route path="/leagues/:leagueId" element={<UserCreatedLeague/>}/>
+      <Route path="/landing" element={<LandingPage/>}/>
     </Routes>
     </SkeletonTheme>
     </GlobalProvider>
